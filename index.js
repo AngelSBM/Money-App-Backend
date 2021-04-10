@@ -10,27 +10,21 @@ const app = express();
 //Configurar el CORS
 app.use( cors() );
 
+//Lectura y parseo del body
+app.use( express.json() );
+
 //Base de datos
 dbConnection();
 
 
-//tWHAaN16EhrdWY7n
-//appmoney_user 
-
-
 //Rutas
-app.get( '/', (req, res) => {
-
-    res.json({
-        ok: true,
-        msg: 'nitido'
-    })
-
-});
+app.use( '/api/saldo', require('./routes/saldo') );
+app.use( '/api/gasto', require('./routes/gasto') );
+app.use( '/api/ingreso', require('./routes/ingreso') );
 
 
 
 
 app.listen( 3100, () => {
-    console.log('Servidor corriendo en puerto' + process.env.PORT );
+    console.log('Servidor corriendo en puerto ' + process.env.PORT );
 } )
