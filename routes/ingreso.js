@@ -68,8 +68,31 @@ router.post( '/', async (req, res) => {
 router.delete( '/', async ( req, res ) => { 
 
     const { id } = req.headers;
+    const { restIngreso } = req.body    
 
     try {
+
+        //Si el usuario también quiere restar al saldo el ingreso que eliminó..
+        if( restIngreso ){
+
+            const saldoDB = await Saldo.findById('6070ebb899925b1d90a5f526');
+            const { saldo } = saldoDB;
+
+            const ingresoDB = await Ingreso.findById( id );
+            const { cantidad } = ingresoDB
+
+            let newSaldo = saldo - cantidad;
+
+            //Actualizar el saldo y eliminar el ingreso de la DB 
+            await saldoDB.updateOne( { saldo: newSaldo } );
+            await Ingreso.findByIdAndDelete( id );
+
+            return res.json({
+                ok: true,
+                msg:'Se ha eliminado el ingreso y se le ha restado al saldo'
+            })
+
+        }
 
         await Ingreso.findByIdAndDelete( id );
 
@@ -77,7 +100,8 @@ router.delete( '/', async ( req, res ) => {
             ok: false,
             msg: 'Ingreso eliminado correctamente'
         });
-        
+
+
     } catch (error) {
         
         console.log(error);
