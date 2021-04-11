@@ -55,8 +55,11 @@ router.post( '/', async (req, res) => {
     try {
         
         await gastoDB.save();
-        let saldo = saldoDB.saldo - req.body.cantidad;
+        
+        const { saldo } = saldoDB;
+        let newSaldo = saldo - req.body.cantidad;
 
+        await Saldo.findByIdAndUpdate( '6070ebb899925b1d90a5f526', { saldo : newSaldo } );
 
         return res.json({
             ok: true,
@@ -71,6 +74,33 @@ router.post( '/', async (req, res) => {
     }
 
 });
+
+router.delete( '/', async ( req, res ) => { 
+
+    const { id } = req.headers;
+
+    try {
+
+        await Gasto.findByIdAndDelete( id );
+
+        return res.json({
+            ok: true,
+            msg: 'Gasto eliminado correctamente'
+        });
+        
+    } catch (error) {
+        
+        console.log(error);
+        return res.status(400).json({
+            ok: false,
+            msg: 'Algo ha salido mal eliminando el gasto'
+        });
+
+    }
+
+
+});
+
 
 
 module.exports = router;
